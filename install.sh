@@ -32,10 +32,23 @@ if [ -z "$TOKEN" ]; then
 fi
 echo "Now open your bot in Telegram and send it any message (e.g. hi). Press Enter here when done."
 read -r _
+TOKEN=$(echo "$TOKEN" | tr -d '[:space:]')
 CHAT=$(python - "$TOKEN" <<'PY'
-import sys, requests
-r = requests.get(f"https://api.telegram.org/bot{sys.argv[1]}/getUpdates", timeout=30).json()
-ids = [u["message"]["chat"]["id"] for u in r.get("result", []) if "message" in u]
+import sys, time, requests
+for attempt in range(3):
+    try:
+        r = requests.get(f"https://api.telegram.org/bot{sys.argv[1]}/getUpdates", timeout=30)
+        break
+    except requests.RequestException as e:
+        print(f"  network problem talking to Telegram (try {attempt+1}/3): {type(e).__name__}", file=sys.stderr)
+        time.sleep(5)
+else:
+    print("  Can't reach api.telegram.org. Check the phone's internet (open any website), then run the installer again.", file=sys.stderr)
+    sys.exit(0)
+if r.status_code == 401 or r.status_code == 404:
+    print("  Telegram says this token is wrong. Copy it again from @BotFather.", file=sys.stderr)
+    sys.exit(0)
+ids = [u["message"]["chat"]["id"] for u in r.json().get("result", []) if "message" in u]
 print(ids[-1] if ids else "")
 PY
 )
