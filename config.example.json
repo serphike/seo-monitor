@@ -1,0 +1,18 @@
+{
+  "site": "https://b2b-seoservices.com",
+  "competitors": [
+    "https://www.techmagnate.com",
+    "https://www.stanventures.com",
+    "https://www.tripledart.com",
+    "https://www.seodiscovery.com",
+    "https://directiveconsulting.com"
+  ],
+  "key_pages": [
+    "/"
+  ],
+  "slow_ms": 4000,
+  "audit_max_pages": 150,
+  "brief_hour": 9,
+  "telegram_token": "",
+  "telegram_chat_id": ""
+}
